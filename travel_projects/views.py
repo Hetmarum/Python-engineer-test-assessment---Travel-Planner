@@ -1,15 +1,17 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
-from travel_projects.models import TravelProject, ProjectPlace
+from travel_projects.models import TravelProject
 from travel_projects.serializers import TravelProjectSerializer, ProjectPlaceSerializer
 
 
 class TravelProjectViewSet(viewsets.ModelViewSet):
     queryset = TravelProject.objects.all().order_by("-id")
     serializer_class = TravelProjectSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["completed", "start_date", "name"]
 
     def destroy(self, request, *args, **kwargs):
         project = self.get_object()
@@ -25,6 +27,8 @@ class TravelProjectViewSet(viewsets.ModelViewSet):
 
 class ProjectPlaceViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectPlaceSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["visited", "title"]
 
     def get_project(self):
         project_id = self.kwargs.get("project_id")
